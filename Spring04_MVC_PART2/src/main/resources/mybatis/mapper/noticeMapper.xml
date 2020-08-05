@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NOTICE">
+	
+	<insert id="insertNotice">
+		INSERT INTO tb_notice(n_idx, user_id, reg_date, title, content)
+		VALUES(SC_NOTICE_IDX.nextval , #{userId} , sysdate , #{title} , #{content})
+	</insert>
+	
+	<insert id="insertFile">
+		INSERT INTO tb_file(f_idx, n_idx, origin_file_name, rename_file_name, save_path)
+		VALUES(SC_file_idx.nextval , SC_NOTICE_IDX.currval , #{originFileName} , #{renameFileName} , #{savePath}  )
+	</insert>
+
+	<select id="selectNoticeList" resultType="NOTICE">
+	select
+		n_idx , user_id , reg_date , title , content
+	FROM(
+		select rownum rnum, n1.*
+		from(
+			select * from tb_notice order by n_idx desc
+		)n1
+	)Where rnum between #{start} and #{end}
+	</select>
+
+	<!-- 전체 게시글 숫자 반환 -->
+	<select id="selectContentCnt" resultType="int">
+		SELECT count(*) FROM tb_notice
+	</select>
+
+	<!-- 게시글 상세 (내용) -->
+	<select id="selectNoticeDetail" resultType="NOTICE">
+		SELECT * FROM tb_notice
+		WHERE n_idx = #{nIdx} 
+	</select>
+
+	<!-- 게시글 별 파일정보 변환 -->
+	<resultMap type="map" id="fileData">
+		<result column="origin_file_name" property="originFileName"/>
+		<result column="RENAME_FILE_NAME" property="renameFileName" />
+		<result column="SAVE_PATH" property="savePath" />
+		<result column="N_IDX" property="nIdx" />
+		<result column="F_IDX" property="fIdx" />
+	</resultMap>
+	
+	<select id="selectFileWithNotice" resultMap="fileData">
+		select * FROM tb_file where n_idx = #{nIdx}
+	</select>
+
+	<delete id="deleteFile">
+		DELETE FROM tb_file
+		where f_idx = #{fIdx}
+	</delete>
+	
+	<select id="selectFileSavePath" resultType="String">
+		SELECT Save_path from tb_file
+		where f_idx = #{fIdx}
+	</select>
+	
+	
+	<update id="updateNotice" >
+		UPDATE tb_notice SET TITLE = #{title} , CONTENT = #{content} WHERE n_idx = #{nIdx}
+	</update>
+	
+	<insert id="updateInsertFile">
+		INSERT INTO tb_file(f_idx, n_idx, origin_file_name, rename_file_name, save_path)
+		VALUES
+			(SC_file_idx.nextval , #{nIdx} , #{file.originFileName} , #{file.renameFileName} , #{file.savePath}  )
+	</insert>
+	
+
+
+</mapper>

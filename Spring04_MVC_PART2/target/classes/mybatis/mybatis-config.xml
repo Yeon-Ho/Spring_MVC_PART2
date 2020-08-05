@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 마이바티스 3 Configuration DTD  -->
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 마이바티스 3 설정항목 태그 -->
+<configuration>
+
+	<settings>
+	<!-- DB컬럼명을 Java의 Camel표기법으로 자동 매핑 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	
+	<typeAliases>
+			<typeAlias type="com.kh.welcome.member.model.vo.Member" alias="MEMBER"/>
+			<typeAlias type="com.kh.welcome.board.model.vo.Notice" alias="NOTICE"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="/mybatis/mapper/MemberMapper.xml"/>
+		<mapper resource="/mybatis/mapper/noticeMapper.xml"/>
+	</mappers>
+	
+
+</configuration>

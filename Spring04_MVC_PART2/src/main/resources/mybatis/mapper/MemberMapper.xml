@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MEMBER">
+	
+	<!-- 
+		vo - Mybatis 매핑
+		1. vo로 매핑할 경우 , #{} 값과 vo의 필드 변수명이 동일해야한다.
+		2. Map<String , Object> 로 매핑 할 경우 , Map의 Key값과 , #{}값이 일치해야 한다.
+		3. Map안에 vo가 들어있거나 Map이 들어있는 경우,
+		   -> .을 사용해서 안쪽 객체에도 접근이 가능하다
+		   	  ex) insert("MEMBER.insertMember" , map);
+		   	   -> #{map.userId}
+		4. 기본타입을 매개변수로 넘겼을 경우 
+			#{}안의 값과 매개변수명이 일치해야 한다.
+	 -->
+
+
+	<insert id="insertMember" parameterType="MEMBER">
+		INSERT INTO TB_MEMBER(user_id , password , email, tell)
+		VALUES(#{userId},#{password}, #{email} , #{tell})
+	</insert>
+
+	<select id="selectMember" resultType="MEMBER">
+		SELECT * FROM TB_MEMBER
+		WHERE user_id = #{id} and password=#{pw}
+		and is_leave = 0
+	</select>
+	
+	<update id="updateMember" parameterType="MEMBER">
+		UPDATE 
+			tb_member
+		SET 
+			password = #{password}
+		, 	email = #{email} 
+		, 	tell = #{tell}
+		WHERE 
+			user_id = #{userId}
+	</update>
+
+<!-- *************************************************************** -->
+<!-- 방법 1 -->
+<!-- 	<delete id="deleteMember" parameterType="MEMBER"> -->
+<!-- 		DELETE FROM TB_MEMBER -->
+<!-- 		WHERE user_id = #{userId} -->
+<!-- 	</delete> -->
+	
+<!-- 방법 2 - update로 회원탈퇴 -->
+	<update id="leaveMember">
+		update 
+			tb_member
+		set
+			is_leave = 1
+		where
+			user_id = #{userId}
+	</update>
+
+<!-- *************************************************************** -->
+
+
+	<!-- 아이디 중복 여부 확인을 위한 처리 -->
+	<select id="selectId" resultType="int">
+		select count(*) from tb_member where user_id = #{userId}
+	</select>
+
+
+</mapper>
+

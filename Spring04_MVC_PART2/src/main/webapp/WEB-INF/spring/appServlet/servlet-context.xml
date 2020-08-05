@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- <mvc:annotation-driven/> 
+		Spring MVC와 관련된 annotation을 등록해준다
+		@RequestMapping , @Valid 등을 자동 처리
+	-->
+	<annotation-driven />
+	<aop:aspectj-autoproxy />
+	<tx:annotation-driven proxy-target-class="false" transaction-manager="transactionManager"/>
+
+	<beans:bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<beans:property name="dataSource" ref="dataSource"></beans:property>
+	</beans:bean>	
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 이름이 select로 시작하는 모든 메소드 -->
+			<tx:method name="select*"/>
+			
+			<tx:method name="update*" propagation="REQUIRED"  rollback-for="Exception.class"/>
+			
+			<tx:method name="insert*" propagation="REQUIRED"  rollback-for="Exception.class"/>
+			
+			<tx:method name="delete*" propagation="REQUIRED"  rollback-for="Exception.class"/>
+			
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<!-- 접근제한자(생략가능) 반환형(필수) 패키지(생략가능) 클래스명(생략가능) 메소드(필수)(매개변수(필수)) -->
+		<aop:pointcut expression="execution(* com.kh.welcome..*.*ServiceImpl.*(..))" id="requiredTx"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx"/>
+	</aop:config>
+
+
+
+
+
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+		<!-- /resources 로 요청이 왔을때 스캔할 경로이다.
+		webapp 아래에 있는 resource 폴더를 찾겠다.
+		해당폴더에 image , css , js , html 파일 같은 정적데이터를 보관
+		정적데이터 : 개발자가 코드를 변경하지 않는 이상 변할 일이 없는 데이터
+					jsp같은 경우 매번 다른 값이 추가되어 생성된다.
+	 -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!--  사용할 view를 결정해주는 viewResolver 객체
+			ex) setViewName()의 값 앞 뒤에 prefix와 suffix를 붙여준다.
+	 -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<beans:bean name="logAop" class="common.aop.LogAop"></beans:bean>
+	
+	
+	<!-- 빈을 자동으로 등록하기 위한 compnent-scan 태그 -->
+	<context:component-scan base-package="com.kh.welcome" />
+	
+	
+	
+</beans:beans>

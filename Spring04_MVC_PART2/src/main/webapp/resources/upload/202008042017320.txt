@@ -1,0 +1,72 @@
+
+ + XHR 객체
+
+  - XMLHttpRequest 객체
+
+  - AJAX통식을 하기 위한 자바스크립트 기본 내장 객체
+
+  - IE 예전 버전에는 존재하지 않는 객체이며 AJAX기술은 ActiveX를 이용해 구현된다
+  - 크로스브라우징 처리가 필요하다
+
+
+
+ + XHR 객체 속성(property)
+
+  - readyState
+	XHR 객체는 준비 - 전송 - 완료 단계를 거친다 (LifeCycle)
+
+	readyState는 각 단계를 표현하는 속성
+
+	0 : UNSENT		- open() 호출 전 (XHR객체를 생성만한 단계)
+	1 : OPENED		- open() 호출 후
+	2 : HEADERS_RECEIVED	- send() 호출 후 응답을 받기 전까지
+	3 : LOADING		- 다운로드 중(response 메시지를 받는 중)
+	4 : DONE		- XHR동작 완료(요청,응답이 완료된 상태)
+
+  - onreadystatechange
+	readyState가 변경될 때마다 실행되는 이벤트 리스너
+	callback 함수로 값을 지정한다
+
+
+
+  - status
+	HTTP 응답 상태코드
+
+  - statusText
+	HTTP 응답 상태 메시지
+
+	** 상태 코드(status) 는 번호 ( 200, 404, 405, 500, ... )
+	** 상태 메시지(statusText) 는 설명( OK, Not Found, Method Not Allowed, ...)
+
+
+
+  - responseText
+	응답 데이터를 String타입으로 추출(파싱)하는 속성
+
+  - responseXML
+	응답 데이터를 XML타입으로 추출(파싱)하는 속성
+
+ 
+
+
+ + XHR 객체 메소드
+
+  - void open( String method, String url, [, boolean asynch] )
+	AJAX 요청 정보를 초기화하는 함수
+	요청 정보에 알맞게 설정하는 함수
+
+	method	- HTTP 요청 메소드를 지정
+	url	- HTTP 요청 URL을 지정
+	asynch	- true(비동기식), false(동기식) [기본값: true]
+
+	** asynch 를 동기식(false)로 설정하면 요청에 대한 응답이 완료될 때까지
+	 브라우저는 대기상태(BLOCKED)가 된다
+
+
+  - void send(null)
+	GET 요청 전송 함수
+	전달파라미터는 open() 함수의 url 지정할 때 쿼리스트링으로 포함시킨다
+
+  - void send(params)
+	POST 요청 전송 함수
+	전달파라미터를 쿼리스트링 형식의 문자열로 params로 넣어 포함시킨다
